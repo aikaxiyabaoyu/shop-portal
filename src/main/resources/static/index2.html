@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+
+    <link rel="stylesheet" type="text/css" href="js/shop/css/webbase.css" />
+    <link rel="stylesheet" type="text/css" href="js/shop/css/pages-JD-index.css" />
+    <link rel="stylesheet" type="text/css" href="js/shop/css/widget-jquery.autocomplete.css" />
+    <link rel="stylesheet" type="text/css" href="js/shop/css/widget-cartPanelView.css" />
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap-datetimepicker/js/moment-with-locales.js"></script>
+    <script src="js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/bootstrap3/js/bootstrap.min.js"></script>
+    <link href="js/bootstrap3/css/bootstrap.min.css" rel="stylesheet"/>
+    <title>商城首页</title>
+</head>
+<body>
+<!--导航栏-->
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">京东商城</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li id="loginMsg"><a href="/login.html" ><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+            <li id="loginOut"><a href="/reg.html"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+            <li id="cart"><a href="cart.html"><span class="glyphicon glyphicon-tree-deciduous"></span> 购物车</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div id="nav-bottom">
+    <!--顶部-->
+    <div class="nav-top">
+        <!--头部-->
+        <div class="header">
+            <div class="py-container">
+                <div class="yui3-g NavList">
+                    <div class="yui3-u Left all-sort">
+                        <h4>全部商品分类</h4>
+                    </div>
+                    <div class="yui3-u Center navArea">
+                        <ul class="nav">
+                            <li class="f-item">服装城</li>
+                            <li class="f-item">美妆馆</li>
+                            <li class="f-item">品优超市</li>
+                            <li class="f-item">全球购</li>
+                            <li class="f-item">闪购</li>
+                            <li class="f-item">团购</li>
+                            <li class="f-item">有趣</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--列表-->
+<div class="sort">
+    <div class="py-container">
+        <div class="yui3-g SortList ">
+            <div class="yui3-u Left all-sort-list">
+                <div class="all-sort-list2">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--热销-->
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">热销商品</h3>
+    </div>
+    <div class="panel-body" id="panel">
+
+    </div>
+</div>
+<!--热销模板-->
+<textarea id="view" style="display: none ">
+        <div class="col-md-4">
+            <img src="##filePath##" width="300px" alt="商品图">
+            <div class="caption">
+                <h4>商品名称：##name##</h4>
+                <h4 style="color: red">商品价格：##price##</h4>
+                <p>
+                    <button onclick="addItem('##id##')" class="btn btn-primary">
+                        购买
+                    </button>
+                    <button class="btn btn-default">
+                        取消
+                    </button>
+                </p>
+            </div>
+        </div>
+</textarea>
+
+
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/shop/js/pages/index.js"></script>
+<script src="js/jquery.cookie.min.js"></script>
+
+<script>
+    $(function () {
+        queryClassify();
+        queryProduct();
+        findMember();
+    })
+    function queryClassify() {
+        $.ajax({
+            url:"http://localhost:8081/api/classify",
+            type:"get",
+            dataType:"json",
+            success:function (result) {
+                if (result.code ==200){
+                    yiji(result.data,1);
+                    initCss();
+                }
+            }
+        })
+    }
+
+    function yiji(classifyList , pid) {
+        var yi_ji = "";
+        for (var i = 0; i < classifyList.length; i++) {
+            if (classifyList[i].pid == pid) {
+                yi_ji += "<div class='item'>";
+                yi_ji += "<h3><a href='/'>"+classifyList[i].name+"</a></h3>";
+                yi_ji += erji(classifyList , classifyList[i].id);
+                yi_ji +=  "</div>";
+            }
+        }
+        $(".all-sort-list2").html(yi_ji);
+    }
+
+    function erji(classifyList , pid) {
+        var yi_ji = "";
+        yi_ji += "<div class=\"item-list clearfix\">";
+        yi_ji += "<div class=\"subitem\">";
+
+        for (var i = 0; i < classifyList.length; i++) {
+            if (classifyList[i].pid == pid) {
+                yi_ji += "<dl class='fore1'>";
+                yi_ji += " <dt><a href='/'>" + classifyList[i].name + "</a></dt>";
+                yi_ji += sanji(classifyList, classifyList[i].id);
+                yi_ji += "</dl>";
+            }
+        }
+        yi_ji += "</div>";
+        yi_ji += "</div>";
+        return yi_ji;
+    }
+
+    function sanji(classifyList , pid) {
+        var yi_ji = "";
+        yi_ji += "<dd>";
+        for (var i = 0; i < classifyList.length; i++) {
+            if (classifyList[i].pid == pid) {
+                yi_ji += "<em><a href='/'>"+classifyList[i].name+"</a></em>";
+            }
+        }
+        yi_ji += "</dd>";
+        return yi_ji;
+    }
+
+    function initCss() {
+        $('.all-sort-list2 > .item').hover(function() {
+            //父类分类列表容器的高度
+            $(this).addClass('hover');
+            $(this).children('.item-list').css('display', 'block');
+        }, function() {
+            $(this).removeClass('hover');
+            $(this).children('.item-list').css('display', 'none');
+        });
+
+        $('.item > .item-list > .close').click(function() {
+            $(this).parent().parent().removeClass('hover');
+            $(this).parent().hide();
+        });
+    }
+
+    // 查询热销 上架状态
+    function queryProduct() {
+        var cookie = $.cookie("fh-token");
+        $.ajax({
+            type:"get",
+            url:"http://localhost:8081/api/product",
+            beforeSend : function (t){
+                t.setRequestHeader("x-auth",cookie);
+            },
+            success:function (result) {
+                if (result.code == 200){
+                    var productArr = result.data;
+                    var v_data = $("#view").val();
+                    for (let product of productArr){
+                        var v_a =  v_data.replace(/##name##/g,product.productName)
+                                        .replace(/##price##/g , product.productPrice)
+                                        .replace(/##filePath##/g , product.fileName)
+                                        .replace(/##id##/g , product.productId);
+                        $("#panel").append(v_a);
+                    }
+                }
+            }
+        })
+    }
+
+    // 获取当亲登录用户信息
+    function findMember() {
+        var cookie = $.cookie("fh-token");
+        $.ajax({
+            type:"get",
+            url:"http://localhost:8081/api/member/findMember",
+            beforeSend:function (t){
+                t.setRequestHeader("x-auth",cookie);
+            },
+            success:function (result) {
+                if (result.code == 200){
+                    $("#loginMsg").html("<a style='color: #ec971f'>" + "欢迎会员 🎄 " + result.data.realName + " 🎄 登陆京东商城" + "</a>");
+                    $("#loginOut").html("<a href='#' onclick='logout()'>注销</a>");
+                }
+            }
+        })
+    }
+
+    //注销
+    function logout() {
+        var cookie = $.cookie("fh-token");
+        $.ajax({
+            type:"get",
+            url:"http://localhost:8081/api/member/logout",
+            beforeSend:function (t){
+                t.setRequestHeader("x-auth",cookie);
+            },
+            success:function (result) {
+                if (result.code == 200){
+                    $.removeCookie("fh-token");
+                    location.href = "/index2.html";
+                }
+            }
+        })
+    }
+
+    function addItem(id) {
+        var token = $.cookie("fh-token");
+        if(token){
+            $.ajax({
+                type:"post",
+                url:"http://localhost:8081/api/cart/addItem",
+                data:{
+                    "goodsId":id,
+                    "num":1
+                },
+                beforeSend:function (t){
+                    t.setRequestHeader("x-auth",token);
+                },
+                success:function (result) {
+                    if(result.code == 200){
+                        location.href = "cart.html";
+                    }
+                }
+            })
+        }else{
+            alert("请先登录！");
+        }
+    }
+</script>
+
+</body>
+</html>

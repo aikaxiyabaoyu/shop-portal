@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width , initial-scale=1">
+
+    <title>会员注册</title>
+    <script src="js/jquery.min.js"></script>
+    <!-- -----------datetimepicker--------------  -->
+    <script src="js/bootstrap-datetimepicker/js/moment-with-locales.js"></script>
+    <script src="js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/bootstrap3/js/bootstrap.min.js"></script>
+    <link href="js/bootstrap3/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<script>
+
+    // 日期初始化
+    function initDate(id , type){
+        var format = type == 1 ?"YYYY-MM-DD":"YYYY-MM-DD HH:mm:ss";
+        $(id).datetimepicker({
+            format:format,
+            locale:"zh-CN",
+            showClear:true
+        });
+    }
+    // 页面加载
+    $(function () {
+        // 初始化日期
+        initDate($("#memberBirthday"),1);
+    })
+    // 注册会员
+    function addMember(){
+        var v_param = {};
+        v_param.memberName = $("#memberName").val();
+        v_param.realName = $("#memberRealName").val();
+        v_param.password = $("#memberPassword").val();
+
+        v_param.phone = $("#memberPhone").val();
+        v_param.mail = $("#memberMail").val();
+        v_param.birthday = $("#memberBirthday").val();
+
+        $.ajax({
+            url:"http://localhost:8081/member",
+            type:"post",
+            dataType:"json",
+            data:v_param,
+            success:function (result) {
+                if (result.code == 200) {
+                    alert("恭喜您注册成功")
+                    location.href = "index2.html";
+                }
+            }
+        })
+    }
+</script>
+
+<!-- 注册表单  -->
+<div class="panel panel-primary">
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div class="row">
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">会员名稱:</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="memberName" placeholder="請輸入会员名稱">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">会员密码:</label>
+                    <div class="col-sm-7">
+                        <input type="password" class="form-control" id="memberPassword" placeholder="請輸入会员密码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">真实姓名:</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="memberRealName" placeholder="請輸入真实姓名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">生日:</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="memberBirthday" placeholder="请输入生日...">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">电话号码:</label>
+
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="memberPhone" placeholder="请输入电话号码...">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">邮箱:</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="memberMail" placeholder="请输入邮箱...">
+                    </div>
+                </div>
+            </div>
+            <div style="margin-left: 310px">
+                <button type="button" class="btn btn-primary" onclick="addMember();"><i class="glyphicon glyphicon-search"></i> 提交</button>
+                <button type="reset" class="btn btn-default"><i class="glyphicon glyphicon-refresh"></i>重置</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
